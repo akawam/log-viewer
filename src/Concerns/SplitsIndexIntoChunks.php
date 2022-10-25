@@ -8,13 +8,25 @@ use Opcodes\LogViewer\LogIndexChunk;
 
 trait SplitsIndexIntoChunks
 {
-    protected int $maxChunkSize;
+    /**
+     * @var int
+     */
+    protected $maxChunkSize;
 
-    protected array $currentChunkDefinition;
+    /**
+     * @var array
+     */
+    protected $currentChunkDefinition;
 
-    protected LogIndexChunk $currentChunk;
+    /**
+     * @var \Opcodes\LogViewer\LogIndexChunk
+     */
+    protected $currentChunk;
 
-    protected array $chunkDefinitions = [];
+    /**
+     * @var array
+     */
+    protected $chunkDefinitions = [];
 
     /**
      * @throws InvalidChunkSizeException
@@ -48,10 +60,7 @@ trait SplitsIndexIntoChunks
 
     public function getChunkDefinitions(): array
     {
-        return [
-            ...$this->chunkDefinitions,
-            $this->getCurrentChunk()->toArray(),
-        ];
+        return [array_merge($this->chunkDefinitions, $this->getCurrentChunk()->toArray())];
     }
 
     public function getChunkDefinition(int $index): ?array
@@ -73,7 +82,7 @@ trait SplitsIndexIntoChunks
     {
         $currentChunk = $this->getCurrentChunk();
 
-        if ($index === $currentChunk?->index) {
+        if ($currentChunk && $index === $currentChunk->index) {
             $chunkData = $currentChunk->data ?? [];
         } else {
             $chunkData = Cache::get($this->chunkCacheKey($index));

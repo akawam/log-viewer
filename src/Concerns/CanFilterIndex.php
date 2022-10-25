@@ -7,15 +7,30 @@ use Opcodes\LogViewer\Level;
 
 trait CanFilterIndex
 {
-    protected ?int $filterFrom = null;
+    /**
+     * @var int|null
+     */
+    protected $filterFrom;
 
-    protected ?int $filterTo = null;
+    /**
+     * @var int|null
+     */
+    protected $filterTo;
 
-    protected ?array $filterLevels = null;
+    /**
+     * @var mixed[]|null
+     */
+    protected $filterLevels;
 
-    protected ?int $limit = null;
+    /**
+     * @var int|null
+     */
+    protected $limit;
 
-    protected ?int $skip = null;
+    /**
+     * @var int|null
+     */
+    protected $skip;
 
     public function setQuery(string $query = null): self
     {
@@ -33,7 +48,11 @@ trait CanFilterIndex
         return $this->query;
     }
 
-    public function forDateRange(int|Carbon $from = null, int|Carbon $to = null): self
+    /**
+     * @param int|\Carbon\Carbon $from
+     * @param int|\Carbon\Carbon $to
+     */
+    public function forDateRange($from = null, $to = null): self
     {
         if ($from instanceof Carbon) {
             $from = $from->timestamp;
@@ -49,7 +68,10 @@ trait CanFilterIndex
         return $this;
     }
 
-    public function forLevels(string|array $levels = null): self
+    /**
+     * @param string|mixed[] $levels
+     */
+    public function forLevels($levels = null): self
     {
         if (is_string($levels)) {
             $levels = [$levels];

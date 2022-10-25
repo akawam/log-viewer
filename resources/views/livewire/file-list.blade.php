@@ -4,9 +4,6 @@
     <div class="mx-3 mb-2">
         <h1 class="font-semibold text-emerald-800 dark:text-emerald-600 text-2xl flex items-center">
             Log Viewer
-            <a href="https://www.github.com/opcodesio/log-viewer" target="_blank" class="rounded ml-3 text-gray-400 hover:text-emerald-800 dark:hover:text-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-700 p-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><use href="#icon-github" /></svg>
-            </a>
         </h1>
         @if($backUrl = config('log-viewer.back_to_system_url'))
             <a href="{{ $backUrl }}" class="rounded inline-flex items-center text-sm text-gray-400 hover:text-emerald-800 dark:hover:text-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-700 mt-3">

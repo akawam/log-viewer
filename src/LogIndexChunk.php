@@ -4,17 +4,37 @@ namespace Opcodes\LogViewer;
 
 class LogIndexChunk
 {
-    protected int $earliestTimestamp;
+    /**
+     * @var int
+     */
+    protected $earliestTimestamp;
 
-    protected int $latestTimestamp;
+    /**
+     * @var int
+     */
+    protected $latestTimestamp;
 
-    protected array $levelCounts = [];
-
-    public function __construct(
-        public array $data,
-        public int $index,
-        public int $size,
-    ) {
+    /**
+     * @var mixed[]
+     */
+    protected $levelCounts = [];
+    /**
+     * @var mixed[]
+     */
+    public $data;
+    /**
+     * @var int
+     */
+    public $index;
+    /**
+     * @var int
+     */
+    public $size;
+    public function __construct(array $data, int $index, int $size)
+    {
+        $this->data = $data;
+        $this->index = $index;
+        $this->size = $size;
     }
 
     public static function fromDefinitionArray(array $definition): LogIndexChunk

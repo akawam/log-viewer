@@ -7,11 +7,20 @@ use Opcodes\LogViewer\Direction;
 
 trait CanIterateIndex
 {
-    protected array $_cachedFlatIndex;
+    /**
+     * @var mixed[]
+     */
+    protected $_cachedFlatIndex;
 
-    protected ArrayIterator $_cachedFlatIndexIterator;
+    /**
+     * @var \ArrayIterator
+     */
+    protected $_cachedFlatIndexIterator;
 
-    protected string $direction = Direction::Forward;
+    /**
+     * @var string
+     */
+    protected $direction = Direction::Forward;
 
     public function setDirection(string $direction): self
     {

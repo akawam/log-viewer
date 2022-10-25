@@ -13,33 +13,47 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LogFile
 {
-    public string $identifier;
+    /**
+     * @var string
+     */
+    public $identifier;
 
-    public string $subFolder = '';
+    /**
+     * @var string
+     */
+    public $subFolder = '';
 
-    protected array $metaData;
+    /**
+     * @var mixed[]
+     */
+    protected $metaData;
 
-    private array $_logIndexCache;
-
-    public function __construct(
-        public string $name,
-        public string $path,
-    ) {
+    /**
+     * @var mixed[]
+     */
+    private $_logIndexCache;
+    /**
+     * @var string
+     */
+    public $name;
+    /**
+     * @var string
+     */
+    public $path;
+    public function __construct(string $name, string $path)
+    {
+        $this->name = $name;
+        $this->path = $path;
         $this->identifier = Str::substr(md5($path), -8, 8).'-'.$name;
-
         // Let's remove the file name because we already know it.
         $this->subFolder = str_replace($name, '', $path);
         $this->subFolder = rtrim($this->subFolder, DIRECTORY_SEPARATOR);
-
         $this->metaData = Cache::get($this->metaDataCacheKey(), []);
     }
 
     public static function fromPath(string $filePath): LogFile
     {
-        return new self(
-            basename($filePath),
-            $filePath,
-        );
+        return new self(basename($filePath), $filePath);
     }
 
     public function index(string $query = null): LogIndex
@@ -176,7 +190,10 @@ class LogFile
         $this->metaData[$attribute] = $value;
     }
 
-    public function getMetaData(string $attribute = null, $default = null): mixed
+    /**
+     * @return mixed
+     */
+    public function getMetaData(string $attribute = null, $default = null)
     {
         if (! isset($this->metaData)) {
             $this->metaData = Cache::get($this->metaDataCacheKey(), []);

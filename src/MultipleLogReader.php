@@ -7,19 +7,40 @@ use Illuminate\Pagination\Paginator;
 
 class MultipleLogReader
 {
-    protected LogFileCollection $fileCollection;
+    /**
+     * @var \Opcodes\LogViewer\LogFileCollection
+     */
+    protected $fileCollection;
 
-    protected ?int $limit = null;
+    /**
+     * @var int|null
+     */
+    protected $limit;
 
-    protected ?int $skip = null;
+    /**
+     * @var int|null
+     */
+    protected $skip;
 
-    protected ?string $query = null;
+    /**
+     * @var string|null
+     */
+    protected $query;
 
-    protected string $direction;
+    /**
+     * @var string
+     */
+    protected $direction;
 
-    protected ?array $levels = null;
+    /**
+     * @var mixed[]|null
+     */
+    protected $levels;
 
-    public function __construct(mixed $files)
+    /**
+     * @param mixed $files
+     */
+    public function __construct($files)
     {
         if ($files instanceof LogFile) {
             $this->fileCollection = new LogFileCollection([$files]);

@@ -10,8 +10,14 @@ class LogFolderCollection extends Collection
     {
         return new LogFolderCollection(
             (new LogFileCollection($files))
-                ->groupBy(fn (LogFile $file) => $file->subFolder)
-                ->map(fn ($files, $subFolder) => new LogFolder($subFolder, $files))
+                ->groupBy(function (LogFile $file)
+                {
+                    return $file->subFolder;
+                })
+                ->map(function ($files, $subFolder)
+                {
+                    return new LogFolder($subFolder, $files);
+                })
                 ->values()
         );
     }
@@ -33,7 +39,10 @@ class LogFolderCollection extends Collection
     public function sortByEarliestFirstIncludingFiles(): self
     {
         $this->sortByEarliestFirst();
-        $this->each(fn (LogFolder $folder) => $folder->files()->sortByEarliestFirst());
+        $this->each(function (LogFolder $folder)
+        {
+            return $folder->files()->sortByEarliestFirst();
+        });
 
         return $this;
     }
@@ -41,7 +50,10 @@ class LogFolderCollection extends Collection
     public function sortByLatestFirstIncludingFiles(): self
     {
         $this->sortByLatestFirst();
-        $this->each(fn (LogFolder $folder) => $folder->files()->sortByLatestFirst());
+        $this->each(function (LogFolder $folder)
+        {
+            return $folder->files()->sortByLatestFirst();
+        });
 
         return $this;
     }

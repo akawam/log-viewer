@@ -10,13 +10,16 @@ use Illuminate\Support\Str;
 
 class LogViewerService
 {
-    const DEFAULT_MAX_LOG_SIZE_TO_DISPLAY = 131_072;    // 128 KB
+    const DEFAULT_MAX_LOG_SIZE_TO_DISPLAY = 131072;    // 128 KB
 
-    protected ?Collection $_cachedFiles = null;
+    /**
+     * @var null|Collection
+     */
+    protected $_cachedFiles = null;
 
-    protected mixed $authCallback;
+    protected $authCallback;
 
-    protected int $maxLogSizeToDisplay = self::DEFAULT_MAX_LOG_SIZE_TO_DISPLAY;
+    protected $maxLogSizeToDisplay = self::DEFAULT_MAX_LOG_SIZE_TO_DISPLAY;
 
     protected function getFilePaths(): array
     {
@@ -87,7 +90,10 @@ class LogViewerService
         if (! isset($this->_cachedFiles)) {
             $this->_cachedFiles = (new LogFileCollection($this->getFilePaths()))
                 ->unique()
-                ->map(fn ($file) => LogFile::fromPath($file))
+                ->map(function ($file)
+                {
+                    return LogFile::fromPath($file);
+                })
                 ->values();
         }
 
@@ -127,7 +133,8 @@ class LogViewerService
     public function getFolder(?string $folderIdentifier): ?LogFolder
     {
         return $this->getFilesGroupedByFolder()
-            ->first(function (LogFolder $folder) use ($folderIdentifier) {
+            ->first(function (LogFolder $folder) use ($folderIdentifier)
+            {
                 return (empty($folderIdentifier) && $folder->isRoot())
                     || $folder->identifier === $folderIdentifier
                     || $folder->path === $folderIdentifier;

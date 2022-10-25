@@ -8,9 +8,13 @@ use Opcodes\LogViewer\LogFile;
 class LogFileDeleted
 {
     use Dispatchable;
+    /**
+     * @var \Opcodes\LogViewer\LogFile
+     */
+    public $file;
 
-    public function __construct(
-        public LogFile $file
-    ) {
+    public function __construct(LogFile $file)
+    {
+        $this->file = $file;
     }
 }

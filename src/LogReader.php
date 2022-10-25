@@ -15,32 +15,48 @@ class LogReader
      *
      * @var array
      */
-    public static array $_instances = [];
+    public static $_instances = [];
 
     /**
      * @var LogFile
      */
-    protected LogFile $file;
+    protected $file;
 
     /**
      * Contains an index of file positions where each log entry is located in.
+     * @var \Opcodes\LogViewer\LogIndex
      */
-    protected LogIndex $logIndex;
+    protected $logIndex;
 
-    protected ?int $limit = null;
+    /**
+     * @var int|null
+     */
+    protected $limit;
 
-    protected ?string $query = null;
+    /**
+     * @var string|null
+     */
+    protected $query;
 
-    protected ?int $onlyShowIndex = null;
+    /**
+     * @var int|null
+     */
+    protected $onlyShowIndex;
 
-    protected bool $lazyScanning = false;
+    /**
+     * @var bool
+     */
+    protected $lazyScanning = false;
 
     /**
      * @var resource|null
      */
     protected $fileHandle = null;
 
-    protected string $direction = Direction::Forward;
+    /**
+     * @var string
+     */
+    protected $direction = Direction::Forward;
 
     public function __construct(LogFile $file)
     {

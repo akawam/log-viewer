@@ -1,7 +1,7 @@
 @php
-    $levelsFound = array_filter($levels ?? [], fn ($level) => $level->count > 0);
-    $levelsSelected = array_values(array_filter($levelsFound, fn ($level) => $level->selected));
-    $totalLogsFound = array_sum(array_map(fn ($level) => $level->count, $levelsFound));
+    $levelsFound = array_filter($levels ?? [], function ($level) {return $level->count > 0;});
+    $levelsSelected = array_values(array_filter($levelsFound, function ($level) {return $level->selected;}));
+    $totalLogsFound = array_sum(array_map(function ($level) { return  $level->count;}, $levelsFound));
 @endphp
 <div class="flex items-center">
     <div class="mr-5 relative log-levels-selector"
@@ -18,7 +18,7 @@
             <strong class="font-semibold">{{ $levelsSelected[0]->level->getName() }} + {{ count($levelsSelected) - 1 }} more</strong>
             @elseif(count($levelsSelected) > 0)
             <span class="opacity-90 mr-1">{{ number_format($logs->total()) }}@if($hasMoreResults)+@endif entries in</span>
-            <strong class="font-semibold">{{ implode(', ', array_map(fn ($levelCount) => $levelCount->level->getName(), $levelsSelected)) }}</strong>
+            <strong class="font-semibold">{{ implode(', ', array_map(function ($levelCount) { return $levelCount->level->getName();}, $levelsSelected)) }}</strong>
             @elseif(count($levelsFound))
             <span class="opacity-90">{{ number_format($totalLogsFound) }}@if($hasMoreResults)+@endif entries found. None selected</span>
             @else

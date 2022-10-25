@@ -9,68 +9,83 @@ use Opcodes\LogViewer\Utils\Utils;
 
 class Log
 {
-    public int $index;
+    /**
+     * @var int
+     */
+    public $index;
 
-    public Carbon $time;
+    /**
+     * @var \Illuminate\Support\Carbon
+     */
+    public $time;
 
-    public Level $level;
+    /**
+     * @var \Opcodes\LogViewer\Level
+     */
+    public $level;
 
-    public string $environment;
+    /**
+     * @var string
+     */
+    public $environment;
 
-    public string $text;
+    /**
+     * @var string
+     */
+    public $text;
 
-    public string $fullText;
+    /**
+     * @var string
+     */
+    public $fullText;
 
-    public bool $fullTextIncomplete = false;
+    /**
+     * @var bool
+     */
+    public $fullTextIncomplete = false;
 
-    public int $fullTextLength;
+    /**
+     * @var int
+     */
+    public $fullTextLength;
 
-    public string $fileIdentifier;
+    /**
+     * @var string
+     */
+    public $fileIdentifier;
 
-    public int $filePosition;
+    /**
+     * @var int
+     */
+    public $filePosition;
 
-    public function __construct(
-        int $index,
-        string $text,
-        string $fileIdentifier,
-        int $filePosition,
-    ) {
+    public function __construct(int $index, string $text, string $fileIdentifier, int $filePosition)
+    {
         $this->index = $index;
         $this->fileIdentifier = $fileIdentifier;
         $this->filePosition = $filePosition;
         $this->fullTextLength = strlen($text);
         $text = mb_convert_encoding(trim($text), 'UTF-8', 'UTF-8');
-
         $matches = [];
         [$firstLine, $theRestOfIt] = explode("\n", Str::finish($text, "\n"), 2);
-
         // sometimes, even the first line will have a HUGE exception with tons of debug data all in one line,
         // so in order to properly match, we must have a smaller first line...
         $firstLineSplit = str_split($firstLine, 1000);
         preg_match(LogViewer::laravelRegexPattern(), array_shift($firstLineSplit), $matches);
-
-        $this->time = Carbon::parse($matches[1])->tz(config('app.timezone', 'UTC'));
-
+        $this->time = isset($matches[1]) ? Carbon::parse($matches[1])->tz(config('app.timezone', 'UTC')) : Carbon::create('1970');
         // $matches[2] contains microseconds, which is already handled
         // $matches[3] contains timezone offset, which is already handled
-
         $this->environment = $matches[5] ?? '';
-
         // There might be something in the middle between the timestamp
         // and the environment/level. Let's put that at the beginning of the first line.
         $middle = trim(rtrim($matches[4] ?? '', $this->environment.'.'));
-
         $this->level = Level::from(strtolower($matches[6] ?? ''));
-
-        $firstLineText = $matches[7];
-
+        $firstLineText = $matches[7] ?? '';
         if (! empty($middle)) {
             $firstLineText = $middle.' '.$firstLineText;
         }
-
         $this->text = trim($firstLineText);
         $text = $firstLineText.($matches[8] ?? '').implode('', $firstLineSplit)."\n".$theRestOfIt;
-
         if (session()->get('log-viewer:shorter-stack-traces', false)) {
             $excludes = config('log-viewer.shorter_stack_trace_excludes', []);
             $emptyLineCharacter = '    ...';
@@ -79,7 +94,7 @@ class Log
             foreach ($lines as $line) {
                 $shouldExclude = false;
                 foreach ($excludes as $excludePattern) {
-                    if (str_starts_with($line, '#') && str_contains($line, $excludePattern)) {
+                    if (strncmp($line, '#', strlen('#')) === 0 && strpos($line, $excludePattern) !== false) {
                         $shouldExclude = true;
                         break;
                     }
@@ -93,12 +108,10 @@ class Log
             }
             $text = implode("\n", $filteredLines);
         }
-
         if (strlen($text) > LogViewer::maxLogSize()) {
             $text = Str::limit($text, LogViewer::maxLogSize());
             $this->fullTextIncomplete = true;
         }
-
         $this->fullText = trim($text);
     }
 

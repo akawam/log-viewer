@@ -17,11 +17,20 @@ class FileList extends Component
 
     const MIN_LOGS_FILE_SIZE_FOR_SCAN_STATE = 50 * 1024 * 1024; // 50 MB
 
-    public ?string $selectedFileIdentifier = null;
+    /**
+     * @var string|null
+     */
+    public $selectedFileIdentifier = null;
 
-    public string $direction = self::NEWEST_FIRST;
+    /**
+     * @var string
+     */
+    public $direction = self::NEWEST_FIRST;
 
-    protected bool $cacheRecentlyCleared;
+    /**
+     * @var bool
+     */
+    protected $cacheRecentlyCleared;
 
     public function mount(string $selectedFileIdentifier = null)
     {
@@ -40,11 +49,17 @@ class FileList extends Component
         $folderCollection = LogViewer::getFilesGroupedByFolder()
             ->when(
                 $this->direction === self::NEWEST_FIRST,
-                fn (LogFolderCollection $folders) => $folders->sortByLatestFirstIncludingFiles()
+                function (LogFolderCollection $folders)
+                {
+                    return $folders->sortByLatestFirstIncludingFiles();
+                }
             )
             ->when(
                 $this->direction === self::OLDEST_FIRST,
-                fn (LogFolderCollection $folders) => $folders->sortByEarliestFirstIncludingFiles()
+                function (LogFolderCollection $folders)
+                {
+                    return $folders->sortByEarliestFirstIncludingFiles();
+                }
             );
 
         return view('log-viewer::livewire.file-list', [
@@ -84,15 +99,16 @@ class FileList extends Component
 
         if ($folder) {
             Gate::authorize('deleteLogFolder', $folder);
-
-            $folder?->files()->each(function (LogFile $file) {
-                if (Gate::check('deleteLogFile', $file)) {
-                    $file->delete();
-                }
-            });
+            if ($folder->files()) {
+                $folder->files()->each(function (LogFile $file)
+                {
+                    if (Gate::check('deleteLogFile', $file)) {
+                        $file->delete();
+                    }
+                });
+            }
         }
-
-        if ($folder?->files()->contains('identifier', $this->selectedFileIdentifier)) {
+        if ($folder->files() && $folder->files()->contains('identifier', $this->selectedFileIdentifier)) {
             $this->selectedFileIdentifier = null;
             $this->emit('fileSelected', $this->selectedFileIdentifier);
         }
@@ -118,8 +134,9 @@ class FileList extends Component
     {
         $folder = LogViewer::getFolder($folderIdentifier);
 
-        $folder?->files()->each->clearCache();
-
+        if ($folder && $folder->files()) {
+            $folder->files()->each->clearCache();
+        }
         $this->cacheRecentlyCleared = true;
 
         $this->dispatchBrowserEvent('scan-files');

@@ -9,7 +9,7 @@ class Benchmark
      *
      * @var array
      */
-    public static array $tests = [];
+    public static $tests = [];
 
     /**
      * Begin a test instance with a given name

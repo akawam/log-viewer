@@ -9,14 +9,25 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LogFolder
 {
-    public string $identifier;
+    /**
+     * @var string
+     */
+    public $identifier;
 
-    protected mixed $files;
-
-    public function __construct(
-        public string $path,
-        mixed $files,
-    ) {
+    /**
+     * @var mixed
+     */
+    protected $files;
+    /**
+     * @var string
+     */
+    public $path;
+    /**
+     * @param mixed $files
+     */
+    public function __construct(string $path, $files)
+    {
+        $this->path = $path;
         $this->identifier = Str::substr(md5($path), -8, 8);
         $this->files = new LogFileCollection($files);
     }
@@ -47,7 +58,7 @@ class LogFolder
 
         $folder = $this->path;
 
-        if (str_contains($folder, $storageLogsFolder = DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'logs')) {
+        if (strpos($folder, $storageLogsFolder = DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'logs') !== false) {
             // If we have /something/storage/logs, then we can remove it to make the string cleaner.
             // storage/logs is implied on Laravel environments.
             $folder = str_replace($storageLogsFolder, '', $folder);

@@ -12,16 +12,20 @@ class LogIndex
     use Concerns\CanIterateIndex;
     use Concerns\SplitsIndexIntoChunks;
 
-    const DEFAULT_CHUNK_SIZE = 20_000;
+    const DEFAULT_CHUNK_SIZE = 20000;
 
-    protected int $nextLogIndexToCreate;
+    protected $nextLogIndexToCreate;
 
-    protected int $lastScannedFilePosition;
+    protected $lastScannedFilePosition;
+    protected $file;
+    protected $query = null;
 
     public function __construct(
-        protected LogFile $file,
-        protected ?string $query = null
+        LogFile $file,
+        ?string $query = null
     ) {
+        $this->query = $query;
+        $this->file = $file;
         $this->loadMetadata();
     }
 
@@ -67,7 +71,7 @@ class LogIndex
         $this->loadMetadata();
     }
 
-    public function addToIndex(int $filePosition, int|Carbon $timestamp, string $severity): int
+    public function addToIndex(int $filePosition, $timestamp, string $severity): int
     {
         $logIndex = $this->nextLogIndexToCreate ?? 0;
 
@@ -201,7 +205,6 @@ class LogIndex
         $limit = $limit ?? $this->limit;
         $skip = $this->skip;
         $chunkDefinitions = $this->getChunkDefinitions();
-
         $this->sortKeys($chunkDefinitions);
 
         foreach ($chunkDefinitions as $chunkDefinition) {
@@ -360,7 +363,10 @@ class LogIndex
 
     public function getLevelCounts(): Collection
     {
-        $counts = collect(Level::caseValues())->mapWithKeys(fn ($case) => [$case => 0]);
+        $counts = collect(Level::caseValues())->mapWithKeys(function ($case)
+        {
+            return [$case => 0];
+        });
 
         if (! $this->hasDateFilters()) {
             // without date filters, we can use a faster approach
@@ -382,7 +388,8 @@ class LogIndex
 
     public function total(): int
     {
-        return array_reduce($this->getChunkDefinitions(), function ($sum, $chunkDefinition) {
+        return array_reduce($this->getChunkDefinitions(), function ($sum, $chunkDefinition)
+        {
             foreach ($chunkDefinition['level_counts'] as $level => $count) {
                 if (! isset($this->filterLevels) || in_array($level, $this->filterLevels)) {
                     $sum += $count;

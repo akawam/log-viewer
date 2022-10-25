@@ -14,7 +14,7 @@ use Opcodes\LogViewer\Http\Livewire\LogList;
 
 class LogViewerServiceProvider extends ServiceProvider
 {
-    private string $name = 'log-viewer';
+    private $name = 'log-viewer';
 
     public function register()
     {
@@ -50,24 +50,38 @@ class LogViewerServiceProvider extends ServiceProvider
         Livewire::component('log-viewer::file-list', FileList::class);
         Livewire::component('log-viewer::log-list', LogList::class);
 
-        Event::listen(LogFileDeleted::class, function (LogFileDeleted $event) {
+        Event::listen(LogFileDeleted::class, function (LogFileDeleted $event)
+        {
             LogViewer::clearFileCache();
         });
 
+
         if (! Gate::has('downloadLogFile')) {
-            Gate::define('downloadLogFile', fn (mixed $user, LogFile $file) => true);
+            Gate::define('downloadLogFile', function ($user, LogFile $file)
+            {
+                return true;
+            });
         }
 
         if (! Gate::has('downloadLogFolder')) {
-            Gate::define('downloadLogFolder', fn (mixed $user, LogFolder $folder) => true);
+            Gate::define('downloadLogFolder', function ($user, LogFolder $folder)
+            {
+                return true;
+            });
         }
 
         if (! Gate::has('deleteLogFile')) {
-            Gate::define('deleteLogFile', fn (mixed $user, LogFile $file) => true);
+            Gate::define('deleteLogFile', function ($user, LogFile $file)
+            {
+                return true;
+            });
         }
 
         if (! Gate::has('deleteLogFolder')) {
-            Gate::define('deleteLogFolder', fn (mixed $user, LogFolder $folder) => true);
+            Gate::define('deleteLogFolder', function ($user, LogFolder $folder)
+            {
+                return true;
+            });
         }
     }
 }

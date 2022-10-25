@@ -10,16 +10,25 @@ class PreferenceStore
 {
     const COOKIE_KEY = 'log-viewer-preferences';
 
-    protected array $preferences;
+    /**
+     * @var mixed[]
+     */
+    protected $preferences;
 
-    protected \Symfony\Component\HttpFoundation\Cookie $queuedCookie;
+    /**
+     * @var \Symfony\Component\HttpFoundation\Cookie
+     */
+    protected $queuedCookie;
 
     public function __construct(Request $request)
     {
         $this->preferences = json_decode($request->cookie(self::COOKIE_KEY, 'null'), true) ?? [];
     }
 
-    public function get(string $key, $default = null): mixed
+    /**
+     * @return mixed
+     */
+    public function get(string $key, $default = null)
     {
         if (isset($this->preferences[$key])) {
             return $this->preferences[$key];
@@ -28,7 +37,10 @@ class PreferenceStore
         return $default;
     }
 
-    public function put(string $key, mixed $value): void
+    /**
+     * @param mixed $value
+     */
+    public function put(string $key, $value): void
     {
         if (! isset($this->preferences)) {
             $this->preferences = [];

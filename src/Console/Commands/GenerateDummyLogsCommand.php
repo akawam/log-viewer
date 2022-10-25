@@ -12,7 +12,10 @@ class GenerateDummyLogsCommand extends Command
 
     protected $description = 'Generate dummy log entries to preview in the Log Viewer';
 
-    protected array $severities = [
+    /**
+     * @var mixed[]
+     */
+    protected $severities = [
         // 'notice',
         'info',
         // 'alert',

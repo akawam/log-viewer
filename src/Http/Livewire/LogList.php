@@ -19,23 +19,50 @@ class LogList extends Component
 
     const NEWEST_FIRST = 'desc';
 
-    public ?string $selectedFileIdentifier = null;
+    /**
+     * @var string|null
+     */
+    public $selectedFileIdentifier = null;
 
-    public string $query = '';
+    /**
+     * @var string
+     */
+    public $query = '';
 
-    public string $queryError = '';
+    /**
+     * @var string
+     */
+    public $queryError = '';
 
-    public int $perPage = 25;
+    /**
+     * @var int
+     */
+    public $perPage = 25;
 
-    public string $direction = self::NEWEST_FIRST;
+    /**
+     * @var string
+     */
+    public $direction = self::NEWEST_FIRST;
 
-    public ?int $log = null;
+    /**
+     * @var int|null
+     */
+    public $log = null;
 
-    public bool $shorterStackTraces = false;
+    /**
+     * @var bool
+     */
+    public $shorterStackTraces = false;
 
-    public bool $refreshAutomatically = false;
+    /**
+     * @var bool
+     */
+    public $refreshAutomatically = false;
 
-    protected bool $cacheRecentlyCleared;
+    /**
+     * @var bool
+     */
+    protected $cacheRecentlyCleared;
 
     protected $queryString = [
         'selectedFileIdentifier' => ['except' => null, 'as' => 'file'],
@@ -58,7 +85,7 @@ class LogList extends Component
 
         $file = LogViewer::getFile($this->selectedFileIdentifier);
 
-        $this->selectedFileIdentifier = $file?->identifier;
+        $this->selectedFileIdentifier = $file->identifier ?? null;
     }
 
     public function render()
